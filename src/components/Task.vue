@@ -1,0 +1,56 @@
+<template>
+    <div class="task"
+         :class="stateClass"
+    >
+        <p>{{ task.name }}</p>
+    </div>
+</template>
+
+<script>
+    export default {
+        props:{
+            task:{
+                type: Object,
+                required: true
+            }
+        },
+        computed:{
+            stateClass(){
+                return{
+                    pending: this.task.pending,
+                    done: !this.task.pending
+                }
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    .task{
+        box-sizing: border-box;
+        width: 15rem;
+        height: 7rem;
+        padding: .5rem;
+        border-radius: .5rem;
+        font-size: 2rem;
+        font-weight: 300;
+        cursor: pointer;
+        user-select: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pending{
+        border-left: .8rem solid #B73229;
+        background-color: #F44336;
+    }
+
+    .done{
+        color: #DDD;
+        border-left: .8rem solid #0A8F0B;
+        background-color: #4CAF50;
+        text-decoration: line-through;
+    }
+
+</style>
