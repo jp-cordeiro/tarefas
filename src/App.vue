@@ -1,8 +1,10 @@
 <template>
 	<div id="app">
 		<h1>Tarefas</h1>
+		<TaskProgress :progress="progress"/>
 		<NewTask @taskAdded="addTask"></NewTask>
 		<TaskGrid
+				@taskStateChanged="toggleTaskState"
 				@taskDeleted="deleteTask"
 				:tasks="tasks"></TaskGrid>
 	</div>
@@ -12,24 +14,33 @@
 
 	import TaskGrid from '@/components/TaskGrid.vue'
 	import NewTask from "@/components/NewTask";
+	import TaskProgress from "./components/TaskProgress";
 
 	export default {
 		components:{
 			TaskGrid,
-			NewTask
+			NewTask,
+			TaskProgress
 		},
 		data(){
 			return{
-				tasks:[
-					{
-						name: "Task 1",
-						pending: true
-					},
-					{
-						name: "Task 2",
-						pending: false
-					}
-				]
+				tasks:[]
+			}
+		},
+		computed:{
+			progress(){
+				const total = this.tasks.length
+				const done = this.tasks.filter(t => !t.pending).length
+				return Math.round(done / total * 100) || 0
+			}
+		},
+		watch:{
+			tasks:{
+				//Verify all changes for this element and childs
+				deep: true,
+				handler(){
+					localStorage.setItem('tasks',JSON.stringify(this.tasks))
+				}
 			}
 		},
 		methods:{
@@ -43,7 +54,15 @@
 			},
 			deleteTask(i){
 				this.tasks.splice(i,1)
+			},
+			toggleTaskState(i){
+				this.tasks[i].pending = !this.tasks[i].pending
 			}
+		},
+		created() {
+			const json = localStorage.getItem('tasks')
+			const array = JSON.parse(json)
+			this.tasks = Array.isArray(array) ? array : []
 		}
 	}
 </script>
